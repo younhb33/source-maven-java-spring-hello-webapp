@@ -28,29 +28,29 @@ pipeline {
     stage('Build Container Image') {
       agent { label 'controller' }
       steps {
-        sh '<DOCKER_IMAGE_BUILD_COMMAND>'
+        sh 'docker image build -t my-tomcat .'
       }
     }
     stage('Tag Container Image') {
       agent { label 'controller' }
       steps {
-        sh '<DOCKER_IMAGE_TAGGING_COMMAND>' // Tagging with build number
-        sh '<DOCKER_IMAGE_TAGGING_COMMAND>' // Tagging with latest
+        sh 'docker image tag my-tomcat yhb1120/my-tomcat:v1' // Tagging with build number
+        sh 'docker image tag my-tomcat yhb1120/my-tomcat:latest' // Tagging with latest
       }
     }
     stage('Push Container Image') {
       agent { label 'controller' }
       steps {
         withDockerRegistry(credentialsId: 'docker-registry-credential', url: 'https://index.docker.io/v1/') {
-          sh '<DOCKER_IMAGE_PUSH_COMMAND>' // Tagging with build number
-          sh '<DOCKER_IMAGE_PUSH_COMMAND>' // Tagging with latest
+          sh 'docker image push yhb1120/my-tomcat:v1' // Tagging with build number
+          sh 'docker image push yhb1120/my-tomcat:latest' // Tagging with latest
         }
       }
     }
     stage('Run Container') {
       agent { label 'controller' }
       steps {
-        sh 'docker container run --detach --name <CONATINAER_NAME> -p 80:8080 <DOCKER_IMAGE_NAME>:<BUILD_NUMBER>'
+        sh 'docker container run --detach --name myweb -p 80:8080 yhb1120/my-tomcat:latest'
       }
     }
   }
