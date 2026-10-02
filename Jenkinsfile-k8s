@@ -6,19 +6,14 @@ pipeline {
         kind: Pod
         spec:
           containers:
-            - name: maven
+          - name: maven
             image: maven:3-eclipse-temurin-21
-            command:
-            - sleep
-            args:
-            - infinity
-	    
-	    - name: buildah
+            command: ["sleep"]
+            args: ["infinity"]
+          - name: buildah
             image: quay.io/buildah/stable:v1
-            command:
-            - sleep
-            args:
-            - infinity
+            command: ["sleep"]
+            args: ["infinity"]
             securityContext:
               privileged: true
             volumeMounts:
@@ -31,7 +26,6 @@ pipeline {
               items:
               - key: .dockerconfigjson
                 path: config.json
-
         '''
     }
   }
@@ -42,7 +36,6 @@ pipeline {
     DOCKERFILE  = 'Dockerfile'
     IMAGE_TAG   = "${REGISTRY}/${USERNAME}/${IMAGE_NAME}"
   }
-
   stages {
     stage('Checkout') {
       steps {
@@ -65,7 +58,6 @@ pipeline {
         }
       }
     }
-
     stage('Build Container Image') {
       steps {
         container('buildah') {
@@ -87,6 +79,5 @@ pipeline {
         }
       }
     }
-
   }
 }
